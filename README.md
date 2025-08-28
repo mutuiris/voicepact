@@ -1,154 +1,192 @@
 # VoicePact
 
-**Voice powered contract automation platform for African markets**
+**Voice powered contract automation & escrow platform for African markets**
 
-VoicePact transforms spoken business agreements into legally binding digital contracts with automated billing, escrow payments, and multi-modal verification using Africa's Talking APIs.
+VoicePact converts spoken business agreements into structured, verifiable digital contracts with automated mobile money escrow, multi‑modal party verification (Voice, SMS, USSD, OTP), and transparent lifecycle tracking.
 
-## Overview
+> Status
+> - Backend: Early alpha – core recording → processing → confirmation → escrow flow under active build.
+> - Client (Web Dashboard): ACTIVE DEVELOPMENT (alpha) – rapid iteration; breaking changes possible until `v0.1.0-alpha`.
+> - API Surface: Subject to refinement; treat undocumented endpoints as unstable.
 
-VoicePact addresses the critical gap between verbal business agreements and formal contract execution in African markets. By leveraging voice AI, mobile money integration, and multi-modal communication channels, it enables inclusive contract automation that works for users across all literacy levels and device types.
+---
 
-### Key Features
+## 1. Overview
 
-- **Voice Contract Generation**: AI powered speech to text and contract term extraction
-- **Multi-Modal Verification**: SMS confirmations, USSD feature phone access, OTP security
-- **Automated Escrow**: Mobile money integration with conditional payment releases
-- **Cryptographic Security**: Digital signatures and audit trails without blockchain complexity
-- **Real-Time Dashboard**: Live contract status updates and payment tracking
-- **Inclusive Design**: Works on smartphones, feature phones, and web interfaces
+Millions of verbal agreements across African informal and SME sectors remain unenforced or disputed due to lack of timely contract formalization, trusted payment holding, and accessible verification channels. VoicePact bridges this gap by turning real-time spoken negotiations into structured contracts, securing funds via escrow, and enabling confirmations across both feature phones and smartphones.
 
-## Architecture
+## 2. Problem & Opportunity
 
-### Technology Stack
+| Challenge | Impact | VoicePact Approach |
+|-----------|--------|--------------------|
+| Verbal deals not documented | Disputes, lost trust | Immediate voice capture → transcription → structured contract |
+| Limited digital access | Exclusion of feature phone users | Voice + SMS + USSD multi-modal flows |
+| Payment risk & mistrust | Delivery/payment disputes | Conditional escrow with event-based release |
+| High friction legal processes | Abandonment | Lightweight, AI-assisted term extraction & simplified signature |
+| Lack of auditability | Hard to resolve disputes | Immutable event logs + cryptographic signatures |
 
-**Backend**
-- FastAPI with async request handling
-- SQLite with WAL mode for data persistence
-- Redis for caching and session management
-- OpenAI Whisper for local speech-to-text processing
-- Python cryptography library for digital signatures
+## 3. Key Features
 
-**Frontend**
-- Next.js with TypeScript
-- Real-time updates via WebSocket connections
-- Responsive design for mobile and desktop
-- Progressive Web App capabilities
+Implemented / In Progress
+- Voice Contract Generation (speech → text → structured terms)
+- Multi-Modal Verification (SMS confirmations, planned USSD, OTP security)
+- Automated Escrow Integration (mobile money via Africa's Talking Payments)
+- Cryptographic Integrity (Ed25519 signatures; audit event trail)
+- Real-Time Status Streaming (WebSocket channels)
+- Inclusive Design (feature phone & smartphone flows)
 
-**External Integrations**
-- Africa's Talking Voice, SMS, USSD, Payments, and OTP APIs
-- M-Pesa and Airtel Money via AT Payments
-- PDF generation for legal compliance
+Planned Enhancements
+- Dispute filing & evidence attachment
+- Role-based dashboards (buyer, seller, agent, auditor)
+- Multi-language support (EN / SWA)
+- Offline-friendly PWA & low-data assets
+- Contract templating library & clause recommender
 
-### System Architecture
+## 4. Architecture
 
+High-Level Diagram
 ```
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   Voice Call    │───▶│  AI Processing   │───▶│   Contract DB   │
-│ (AT Voice API)  │    │ (Whisper + GPT)  │    │  (PostgreSQL)   │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
-         │                       │                       │
-         ▼                       ▼                       ▼
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│ SMS/USSD Confirm│    │ Payment Escrow   │    │ Real-time UI    │
-│ (AT SMS/USSD)   │    │ (AT Payments)    │    │   (WebSocket)   │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
+┌─────────────────┐    ┌──────────────────┐    ┌────────────────────┐    ┌──────────────────┐
+│  Voice Capture  │───▶│  AI Processing   │───▶│  Contract Assembly │───▶│  Persistence      │
+│ (AT Voice API)  │    │ (Whisper + NLP)  │    │  + Validation      │    │ (SQLite dev /     │
+└─────────────────┘    └──────────────────┘    └────────────────────┘    │ PostgreSQL prod)  │
+        │                      │                     │                    └──────────────────┘
+        ▼                      │                     ▼
+┌─────────────────┐            │           ┌─────────────────┐
+│  SMS / USSD     │◀───────────┼──────────▶  Verification   │
+│  Confirmations  │            │           │  & Signatures   │
+└─────────────────┘            │           └─────────────────┘
+        │                      │                     │
+        ▼                      ▼                     ▼
+┌─────────────────┐    ┌──────────────────┐    ┌──────────────────┐
+│ Escrow Payments │    │ Event Streaming  │    │ Client Dashboard │
+│ (AT Payments)   │    │ (WebSockets)     │    │ (Next.js)        │
+└─────────────────┘    └──────────────────┘    └──────────────────┘
 ```
 
-## Getting Started
+## 5. Technology Stack
+
+Backend
+- FastAPI (async I/O)
+- Speech Processing: Whisper (local)
+- NLP / Term Extraction: (initial rule-based + LLM hybrid pipeline)
+- Data: SQLite (dev), PostgreSQL (production target)
+- Cache / Sessions: Redis
+- Crypto: Ed25519 signatures (python-cryptography)
+
+Frontend (Client –> in development)
+- Next.js (App Router) + TypeScript
+- WebSocket live channels
+- Planned: Tailwind CSS, SWR / TanStack Query, Playwright tests
+
+External Integrations
+- Africa's Talking: Voice, SMS, USSD, Payments, OTP
+- Mobile Money Rails: M-Pesa, Airtel (through AT)
+- PDF Contract Generation (planned)
+- Future: Object storage (audio + evidence artifacts)
+
+## 6. Data & Processing Flow
+
+1. Initiate Voice Conference (two+ parties).
+2. Record & Store Audio (temporary staging).
+3. Transcribe & Segment Speakers.
+4. Extract Contract Terms (parties, commodity/service, quantity, pricing, delivery, dates).
+5. Generate Draft Contract (JSON + human-readable PDF/summary).
+6. Dispatch Multi-Channel Confirmations (SMS codes / USSD menu).
+7. Collect Confirmations + Signatures (cryptographic + OTP).
+8. Initiate Escrow Hold (conditional on confirmations).
+9. Track Delivery / Release Conditions.
+10. Escrow Release Event → Funds distributed & contract archived.
+
+## 7. Security Model
+
+Principles
+- Least privilege separation between processing steps.
+- No private keys in frontend – signatures are server-side.
+- Audio encryption at rest (planned envelope encryption).
+- Ed25519 signatures for contract canonical form hash.
+- Immutable event log (append-only table) for evidentiary chain.
+
+Controls (Current / Planned)
+- OTP-backed phone identity binding.
+- Rate limiting: SMS / USSD confirmation attempts.
+- Integrity hashing of audio + transcript bundles.
+- Secure webhook verification (HMAC headers – planned).
+- PII minimization: Partial phone masking in UI.
+
+## 8. Getting Started
 
 ### Prerequisites
-
 - Python 3.11+
 - Node.js 18+
 - Redis server
-- Africa's Talking developer account
-- ngrok for local webhook testing
+- Africa's Talking Sandbox Account
+- ngrok for local Voice/SMS/USSD callbacks
 
-### Installation
+### Clone
+```bash
+git clone https://github.com/mutuiris/voicepact.git
+cd voicepact
+```
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/mutuiris/voicepact.git
-   cd voicepact
-   ```
+### Backend Setup
+```bash
+cd backend
+python -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+cp .env.example .env            # fill credentials
+uvicorn main:app --reload --port 8000
+```
 
-2. **Backend setup**
-   ```bash
-   cd backend
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   pip install -r requirements.txt
-   ```
+### Client (Web Dashboard) Setup
+```bash
+cd client
+npm install
+cp .env.local.example .env.local  # create if missing
+npm run dev
+```
 
-3. **Frontend setup**
-   ```bash
-   cd frontend
-   npm install
-   ```
+Visit: http://localhost:3000
 
-4. **Environment configuration**
-   ```bash
-   cp .env.example .env
-   # Configure your Africa's Talking credentials and other settings
-   ```
+### Local Webhooks
+```bash
+ngrok http 8000
+# Update WEBHOOK_BASE_URL in backend .env with generated https URL
+```
 
-### Environment Variables
+## 9. Environment Configuration
 
-Create `.env` file in the backend directory:
-
+Backend `.env`
 ```env
-# Africa's Talking Configuration
 AT_USERNAME=sandbox
 AT_API_KEY=your_api_key_here
 AT_VOICE_NUMBER=+254XXXXXXXXX
 
-# Database Configuration
 DATABASE_URL=sqlite:///./voicepact.db
 REDIS_URL=redis://localhost:6379
 
-# Security
 SECRET_KEY=your_secret_key
 SIGNATURE_PRIVATE_KEY=your_ed25519_private_key
 
-# External Services
 WEBHOOK_BASE_URL=https://your-ngrok-url.ngrok.io
 ```
 
-### Development Server
+Client `.env.local`
+```env
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
+NEXT_PUBLIC_WEBSOCKET_BASE=ws://localhost:8000
+NEXT_PUBLIC_FEATURE_LOW_DATA_MODE=true
+NEXT_PUBLIC_FEATURE_ESCROW_TIMELINE=true
+NEXT_PUBLIC_FEATURE_ROLE_AWARE_DASHBOARD=false
+```
 
-1. **Start Redis server**
-   ```bash
-   redis-server
-   ```
+## 10. API Reference
 
-2. **Start backend**
-   ```bash
-   cd backend
-   uvicorn main:app --reload --port 8000
-   ```
+### POST /voice/conference/create
+Initiate multi-party recording session.
 
-3. **Start frontend**
-   ```bash
-   cd frontend
-   npm run dev
-   ```
-
-4. **Setup webhooks**
-   ```bash
-   ngrok http 8000
-   # Update WEBHOOK_BASE_URL in .env with ngrok URL
-   ```
-
-Visit `http://localhost:3000` to access the dashboard.
-
-## API Documentation
-
-### Voice Contract Creation
-
-**POST** `/voice/conference/create`
-
-Create a new voice conference for contract recording.
-
+Request
 ```json
 {
   "parties": ["+254712345678", "+254798765432"],
@@ -157,7 +195,7 @@ Create a new voice conference for contract recording.
 }
 ```
 
-**Response:**
+Response
 ```json
 {
   "conference_id": "conf_1234567890",
@@ -167,12 +205,8 @@ Create a new voice conference for contract recording.
 }
 ```
 
-### Contract Processing
-
-**POST** `/contracts/process`
-
-Process recorded voice conversation into structured contract.
-
+### POST /contracts/process
+Convert recorded audio to structured contract.
 ```json
 {
   "audio_url": "https://voice.africastalking.com/recording/abc123",
@@ -183,255 +217,116 @@ Process recorded voice conversation into structured contract.
 }
 ```
 
-### SMS Confirmation
+### POST /sms/webhook
+Inbound SMS confirmation handler.
 
-**POST** `/sms/webhook`
+### POST /ussd/webhook
+USSD session state machine entry point.
 
-Handle incoming SMS confirmations and contract signatures.
 
-```json
-{
-  "from": "+254712345678",
-  "text": "YES-VC-MAZ-240815-001",
-  "linkId": "12345",
-  "date": "2025-08-15T10:30:00Z"
-}
-```
+## 11. Usage Examples
 
-### USSD Integration
-
-**POST** `/ussd/webhook`
-
-Handle USSD session interactions for feature phone users.
-
-```json
-{
-  "sessionId": "ATUid_session123",
-  "phoneNumber": "+254712345678",
-  "text": "1*2*VC-MAZ-240815-001",
-  "serviceCode": "*483#"
-}
-```
-
-## Usage Examples
-
-### Agricultural Supply Contract
-
+Voice Conference + Processing (Python)
 ```python
-# Example: Creating a maize supply contract
-import requests
+import requests, json, websocket
 
-# 1. Initiate voice conference
-response = requests.post("http://localhost:8000/voice/conference/create", json={
+base = "http://localhost:8000"
+
+r = requests.post(f"{base}/voice/conference/create", json={
     "parties": ["+254712345678", "+254798765432"],
     "contract_type": "agricultural_supply"
 })
+conference_id = r.json()["conference_id"]
 
-conference_id = response.json()["conference_id"]
-
-# 2. After voice recording completes, process contract
-contract_response = requests.post("http://localhost:8000/contracts/process", json={
+contract_r = requests.post(f"{base}/contracts/process", json={
     "audio_url": f"https://voice.africastalking.com/recording/{conference_id}",
     "parties": [
         {"phone": "+254712345678", "role": "seller"},
         {"phone": "+254798765432", "role": "buyer"}
     ]
 })
-
-contract_id = contract_response.json()["contract_id"]
-
-# 3. Monitor contract status via WebSocket
-import websocket
+contract_id = contract_r.json()["contract_id"]
 
 def on_message(ws, message):
     data = json.loads(message)
-    if data["type"] == "contract_confirmed":
-        print(f"Contract {data['contract_id']} confirmed by all parties")
+    if data.get("type") == "contract_confirmed":
+        print("Confirmed:", data["contract_id"])
 
-ws = websocket.WebSocketApp(f"ws://localhost:8000/contracts/{contract_id}/live")
-ws.on_message = on_message
+ws = websocket.WebSocketApp(f"ws://localhost:8000/contracts/{contract_id}/live",
+                            on_message=on_message)
 ws.run_forever()
 ```
 
-### USSD Delivery Confirmation Flow
-
+USSD Flow
 ```
 User dials: *483#
-┌─────────────────────────────────────────┐
-│ Welcome to VoicePact                    │
-│ 1. View My Contracts                    │
-│ 2. Confirm Delivery                     │
-│ 3. Check Payments                       │
-│ 4. Report Issue                         │
-└─────────────────────────────────────────┘
-
-User selects: 2
-┌─────────────────────────────────────────┐
-│ Enter Contract ID:                      │
-│ VC-MAZ-240815-001                       │
-└─────────────────────────────────────────┘
-
-System displays:
-┌─────────────────────────────────────────┐
-│ Contract: 100 bags Grade A Maize        │
-│ Value: KES 320,000                      │
-│ Buyer: Grace Wanjiku                    │
-│ 1. Confirm Full Delivery                │
-│ 2. Partial Delivery                     │
-│ 3. Cancel                               │
-└─────────────────────────────────────────┘
+┌───────────────────────────────┐
+│ VoicePact                     │
+│ 1. View My Contracts          │
+│ 2. Confirm Delivery           │
+│ 3. Check Payments             │
+│ 4. Report Issue               │
+└───────────────────────────────┘
 ```
 
-## Deployment
+## 12. Performance & Optimization
 
-### Production Deployment (Railway)
+Benchmarks (Targets)
+- Voice Processing (10 min audio): 3–5s (post-transcription pipeline)
+- Contract Generation: < 1s
+- SMS Delivery: 2–3s average
+- Payment Escrow Trigger: 10–15s (mobile money network variability)
+- USSD Response: < 2s menu navigation
 
-1. **Connect Repository**
-   ```bash
-   # Railway CLI deployment
-   railway login
-   railway link
-   railway up
-   ```
+Optimization Features
+- Local Whisper inference (removes external latency)
+- Redis caching of frequent contract lookups
+- Async non-blocking I/O for external API calls
+- Connection pooling for Africa's Talking endpoints
 
-2. **Environment Setup**
-   ```bash
-   # Set production environment variables
-   railway variables set AT_USERNAME=your_production_username
-   railway variables set AT_API_KEY=your_production_api_key
-   railway variables set DATABASE_URL=postgresql://user:pass@host:port/db
-   ```
 
-3. **Database Migration**
-   ```bash
-   railway run python migrate.py
-   ```
+## 13. Frontend (Client) Status
 
-### Frontend Deployment (Vercel)
+Located in `/client` directory (Next.js). Current focus:
+- Contract detail real-time panel
+- OTP & signature capture modal
+- Escrow timeline visualization
+- Role‑aware dashboards (in design)
 
-```bash
-cd frontend
-vercel --prod
-```
 
-## Testing
+## 14. Roadmap
 
-### Unit Tests
+Short Term
+- [ ] Stabilize contract processing endpoint
+- [ ] WebSocket event schema versioning
+- [ ] USSD confirmation flow finalization
+- [ ] Escrow release conditions engine
+- [ ] Basic dispute initiation endpoint
 
-```bash
-# Backend tests
-cd backend
-pytest tests/ -v
+Mid Term
+- [ ] Multi-language
+- [ ] PWA offline caching (service worker)
+- [ ] Evidence file storage integration
+- [ ] Advanced analytics (contract completion metrics)
 
-# Frontend tests  
-cd frontend
-npm test
-```
+Long Term
+- [ ] Clause recommendation model fine-tuning
+- [ ] On-device / edge speech inference optimization
+- [ ] Federated deployment support (multi-tenancy)
+- [ ] Regulatory compliance modules (jurisdictional templates)
 
-### Integration Tests
 
-```bash
-# Test Africa's Talking API integration
-pytest tests/integration/test_at_apis.py
+## 15. License
 
-# Test voice processing pipeline
-pytest tests/integration/test_voice_pipeline.py
+MIT – see [LICENSE](LICENSE).
 
-# Test payment flows
-pytest tests/integration/test_payments.py
-```
 
-### Load Testing
 
-```bash
-# Test concurrent voice processing
-python scripts/load_test_voice.py --concurrent=10 --duration=60
+## Acknowledgements
 
-# Test SMS delivery performance
-python scripts/load_test_sms.py --messages=100
-```
-
-## Contributing
-
-### Development Workflow
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/new-feature`
-3. Make changes and add tests
-4. Run test suite: `pytest` and `npm test`
-5. Submit pull request with detailed description
-
-### Code Style
-
-- **Backend**: Black formatter, isort imports, flake8 linting
-- **Frontend**: Prettier formatting, ESLint rules
-- **Commit Messages**: Conventional Commits format
-
-### Pull Request Template
-
-```markdown
-## Description
-Brief description of changes
-
-## Type of Change
-- [ ] Bug fix
-- [ ] New feature
-- [ ] Breaking change
-- [ ] Documentation update
-
-## Testing
-- [ ] Unit tests pass
-- [ ] Integration tests pass
-- [ ] Manual testing completed
-
-## Checklist
-- [ ] Code follows style guidelines
-- [ ] Self-review completed
-- [ ] Documentation updated
-```
-
-## Security
-
-### Security Measures
-
-- **Cryptographic Signatures**: Ed25519 digital signatures for contract integrity
-- **Audio Encryption**: Voice recordings encrypted at rest and in transit
-- **Access Control**: Phone number-based authentication with OTP verification
-- **Audit Logging**: Comprehensive logging of all contract operations
-- **Data Protection**: GDPR-compliant data handling and user consent
-
-## Performance
-
-### Benchmarks
-
-- **Voice Processing**: 3-5 seconds for 10-minute audio
-- **Contract Generation**: Sub-second term extraction
-- **SMS Delivery**: 2-3 seconds average delivery time
-- **Payment Processing**: 10-15 seconds for M-Pesa transactions
-- **USSD Response**: Sub-2 second menu navigation
-
-### Optimization Features
-
-- **Local AI Models**: No external API dependencies for core processing
-- **Redis Caching**: Aggressive caching for frequently accessed data
-- **Connection Pooling**: Optimized HTTP client for Africa's Talking APIs
-- **Async Processing**: Non-blocking operations for concurrent requests
-
-## License
-
-MIT License - see [LICENSE](LICENSE) file for details.
-
-## Support
-
-### Community
-
-- **GitHub Issues**: Bug reports and feature requests
-- **GitHub Discussions**: Community Q&A and ideas
-- **Africa's Talking Community**: Integration support and best practices
-
+Built for Africa's Talking Open Hackathon: Billing & Payment Solutions  
+Nairobi, Kenya – August 2025
 
 ---
 
-**Built for Africa's Talking Open Hackathon: Billing & Payment Solutions**
-
-Nairobi, Kenya - August 2025
+> NOTE: Frontend client is in active iterative development; API contracts may adjust. Pin versions or use tagged releases for stability once available.
