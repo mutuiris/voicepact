@@ -4,7 +4,6 @@ from typing import Optional, List
 from decimal import Decimal
 
 from sqlalchemy import (
-    Column,
     String, 
     Text,
     Integer,
