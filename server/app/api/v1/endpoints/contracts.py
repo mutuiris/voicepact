@@ -105,11 +105,12 @@ async def create_contract(
             
             # Create signature record
             signature = ContractSignature(
-                contract_id=contract_id,
-                signer_phone=party_data.get('phone'),
-                signature_method="sms_confirmation",
-                status=SignatureStatus.PENDING
-            )
+            contract_id=contract_id,
+            signer_phone=party_data.get('phone'),
+            signature_method="sms_confirmation",
+            signature_hash=crypto_service.generate_contract_hash(f"{contract_id}:{party_data.get('phone')}"),
+            status=SignatureStatus.PENDING
+        )
             db.add(signature)
         
         await db.commit()
