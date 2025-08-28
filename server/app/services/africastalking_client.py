@@ -76,11 +76,28 @@ class AfricasTalkingClient:
         
         africastalking.initialize(self.username, self.api_key)
         
+        # Always available services
         self.sms_service = africastalking.SMS
         self.voice_service = africastalking.Voice
-        self.payment_service = africastalking.Payment
-        self.airtime_service = africastalking.Airtime
-        self.token_service = africastalking.Token
+        
+        # Optional services
+        try:
+            self.payment_service = africastalking.Payment
+        except (AttributeError, Exception):
+            self.payment_service = None
+            logger.warning("Payment API not available")
+            
+        try:
+            self.airtime_service = africastalking.Airtime
+        except (AttributeError, Exception):
+            self.airtime_service = None
+            logger.warning("Airtime API not available")
+            
+        try:
+            self.token_service = africastalking.Token
+        except (AttributeError, Exception):
+            self.token_service = None
+            logger.warning("Token API not available")
         
         self.http_client = httpx.AsyncClient(
             timeout=httpx.Timeout(settings.http_timeout),

@@ -136,7 +136,7 @@ class DatabaseManager:
             finally:
                 await session.close()
 
-    async def get_redis_session(self) -> redis.Redis:
+    async def get_redis_session(self) -> 'redis.asyncio.Redis':
         if not self._redis_client:
             raise RuntimeError("Redis not initialized")
         return self._redis_client

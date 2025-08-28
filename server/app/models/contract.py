@@ -254,7 +254,7 @@ class Payment(Base):
     failure_reason: Mapped[Optional[str]] = mapped_column(String(200))
     retry_count: Mapped[int] = mapped_column(Integer, default=0)
     
-    metadata: Mapped[Optional[dict]] = mapped_column(JSON, default=dict)
+    payment_metadata: Mapped[Optional[dict]] = mapped_column(JSON, default=dict)
     
     contract: Mapped["Contract"] = relationship(
         "Contract",
@@ -362,7 +362,7 @@ class VoiceRecording(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, index=True)
     processed_at: Mapped[Optional[datetime]] = mapped_column(DateTime)
     
-    metadata: Mapped[dict] = mapped_column(JSON, default=dict)
+    recording_metadata: Mapped[dict] = mapped_column(JSON, default=dict)
 
     __table_args__ = (
         Index("idx_recording_status_created", "processing_status", "created_at"),
@@ -394,7 +394,7 @@ class SMSLog(Base):
     
     contract_id: Mapped[Optional[str]] = mapped_column(String(50), index=True)
     
-    metadata: Mapped[dict] = mapped_column(JSON, default=dict)
+    sms_metadata: Mapped[dict] = mapped_column(JSON, default=dict)
 
     __table_args__ = (
         Index("idx_sms_recipient_status", "recipient", "status"),
