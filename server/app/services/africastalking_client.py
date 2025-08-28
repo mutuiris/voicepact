@@ -1,12 +1,10 @@
 import asyncio
 import hashlib
 import hmac
-import json
 import logging
 import time
 from datetime import datetime
 from typing import Dict, List, Optional, Union, Any
-from urllib.parse import urlencode
 
 import africastalking
 import httpx
