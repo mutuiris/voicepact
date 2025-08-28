@@ -35,3 +35,7 @@ htmlcov/
 
 # MacOS
 .DS_Store
+
+/server/voicepact.db
+/server/voicepact.db-shm
+/server/voicepact.db-wal
