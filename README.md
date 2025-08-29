@@ -329,4 +329,4 @@ Nairobi, Kenya – August 2025
 
 ---
 
-> NOTE: Frontend client is in active iterative development; API contracts may adjust. Pin versions or use tagged releases for stability once available.
+> NOTE: Frontend client is in active development; API contracts may adjust.
