@@ -29,7 +29,7 @@ Millions of verbal agreements across African informal and SME sectors remain une
 
 Implemented / In Progress
 - Voice Contract Generation (speech → text → structured terms)
-- Multi-Modal Verification (SMS confirmations, planned USSD, OTP security)
+- Multi-Modal Verification (SMS confirmations, planned USSD)
 - Automated Escrow Integration (mobile money via Africa's Talking Payments)
 - Cryptographic Integrity (Ed25519 signatures; audit event trail)
 - Real-Time Status Streaming (WebSocket channels)
@@ -80,7 +80,7 @@ Frontend (Client –> in development)
 - Planned: Tailwind CSS, SWR / TanStack Query, Playwright tests
 
 External Integrations
-- Africa's Talking: Voice, SMS, USSD, Payments, OTP
+- Africa's Talking: Voice, SMS, USSD, Payments
 - Mobile Money Rails: M-Pesa, Airtel (through AT)
 - PDF Contract Generation (planned)
 - Future: Object storage (audio + evidence artifacts)
